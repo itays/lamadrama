@@ -10,33 +10,43 @@
 
 import { Route as rootRouteImport } from "./routes/__root"
 import { Route as IndexRouteImport } from "./routes/index"
+import { Route as ApplicationMatchRouteImport } from "./routes/applicationMatch"
 
 const IndexRoute = IndexRouteImport.update({
   id: "/",
   path: "/",
   getParentRoute: () => rootRouteImport,
 } as any)
+const ApplicationMatchRoute = ApplicationMatchRouteImport.update({
+  id: "/applicationMatch",
+  path: "/applicationMatch",
+  getParentRoute: () => rootRouteImport,
+} as any)
 
 export interface FileRoutesByFullPath {
   "/": typeof IndexRoute
+  "/applicationMatch": typeof ApplicationMatchRoute
 }
 export interface FileRoutesByTo {
   "/": typeof IndexRoute
+  "/applicationMatch": typeof ApplicationMatchRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   "/": typeof IndexRoute
+  "/applicationMatch": typeof ApplicationMatchRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
-  fullPaths: "/"
+  fullPaths: "/" | "/applicationMatch"
   fileRoutesByTo: FileRoutesByTo
-  to: "/"
-  id: "__root__" | "/"
+  to: "/" | "/applicationMatch"
+  id: "__root__" | "/" | "/applicationMatch"
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
+  ApplicationMatchRoute: typeof ApplicationMatchRoute
 }
 
 declare module "@tanstack/react-router" {
@@ -48,11 +58,19 @@ declare module "@tanstack/react-router" {
       preLoaderRoute: typeof IndexRouteImport
       parentRoute: typeof rootRouteImport
     }
+    "/applicationMatch": {
+      id: "/applicationMatch"
+      path: "/applicationMatch"
+      fullPath: "/applicationMatch"
+      preLoaderRoute: typeof ApplicationMatchRouteImport
+      parentRoute: typeof rootRouteImport
+    }
   }
 }
 
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
+  ApplicationMatchRoute: ApplicationMatchRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
