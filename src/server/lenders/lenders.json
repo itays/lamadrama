@@ -32,5 +32,14 @@
   {
     "name": "Lama International Bank",
     "constraints": [{ "field": "requestedAmount", "op": "lt", "value": 200000 }]
+  },
+  {
+    "name": "Steady Income Bank",
+    "constraints": [
+      { "field": "averageYearIncome", "op": "gte", "value": 40000 },
+      { "field": "borrowerType", "op": "eq", "value": "consumer" },
+      { "field": "riskLevel", "op": "lt", "value": 90 },
+      { "field": "requestedAmount", "op": "lt", "value": 100000 }
+    ]
   }
 ]

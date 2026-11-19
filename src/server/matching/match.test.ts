@@ -118,6 +118,54 @@ describe("priority", () => {
   })
 })
 
+describe("Steady Income Bank", () => {
+  it("ranks first once average income reaches 40,000", () => {
+    expect(
+      match({
+        ...consumerStudentCA,
+        currentYearIncome: 35000,
+        previousYearIncome: 45000,
+      })
+    ).toEqual(["Steady Income Bank", "Bank HaPoalama"])
+  })
+})
+
+describe("averageYearIncome", () => {
+  const incomeLender = LenderSchema.parse({
+    name: "Steady Income Bank",
+    constraints: [{ field: "averageYearIncome", op: "gte", value: 40000 }],
+  })
+
+  it.each([
+    [30000, 50000, ["Steady Income Bank"]],
+    [30000, 49998, []],
+    ["35000", "45000", ["Steady Income Bank"]],
+  ])(
+    "current %s and previous %s",
+    (currentYearIncome, previousYearIncome, expected) => {
+      expect(
+        match({ ...consumerStudentCA, currentYearIncome, previousYearIncome }, [
+          incomeLender,
+        ])
+      ).toEqual(expected)
+    }
+  )
+
+  it("ignores an averageYearIncome sent by the client", () => {
+    expect(
+      match(
+        {
+          ...consumerStudentCA,
+          currentYearIncome: 10000,
+          previousYearIncome: 10000,
+          averageYearIncome: 1000000,
+        },
+        [incomeLender]
+      )
+    ).toEqual([])
+  })
+})
+
 describe("lender data", () => {
   it("rejects an operator applied to the wrong field type", () => {
     expect(

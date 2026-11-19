@@ -1,10 +1,16 @@
 import { z } from "zod"
-import { type LoanApplication, numericFields, textFields } from "./application"
+import { numericFields, textFields } from "./application"
+import { derivedNumericFields, type Facts } from "./facts"
+
+const numericField = z.union([
+  z.keyof(z.object(numericFields)),
+  derivedNumericFields,
+])
 
 const compare = <const Op extends string>(op: Op) =>
   z.object({
     op: z.literal(op),
-    field: z.keyof(z.object(numericFields)),
+    field: numericField,
     value: z.number(),
   })
 
@@ -28,7 +34,7 @@ export const ConstraintSchema = z.union([
 
 export type Constraint = z.infer<typeof ConstraintSchema>
 
-export function satisfies(app: LoanApplication, c: Constraint): boolean {
+export function satisfies(app: Facts, c: Constraint): boolean {
   switch (c.op) {
     case "lt":
       return app[c.field] < c.value
