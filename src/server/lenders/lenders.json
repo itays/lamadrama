@@ -1,0 +1,45 @@
+[
+  {
+    "name": "First Lama Bank",
+    "constraints": [
+      { "field": "borrowerType", "op": "eq", "value": "consumer" },
+      { "field": "riskLevel", "op": "lt", "value": 80 }
+    ]
+  },
+  {
+    "name": "Bank HaPoalama",
+    "constraints": [
+      { "field": "loanType", "op": "eq", "value": "student" },
+      { "field": "state", "op": "eq", "value": "CA" },
+      { "field": "riskLevel", "op": "lt", "value": 60 }
+    ]
+  },
+  {
+    "name": "Salt and Pepper",
+    "constraints": [
+      { "field": "borrowerType", "op": "eq", "value": "business" },
+      { "field": "requestedAmount", "op": "gt", "value": 500000 },
+      { "field": "riskLevel", "op": "lt", "value": 80 }
+    ]
+  },
+  {
+    "name": "Bank Otzar Halama",
+    "constraints": [
+      { "field": "loanType", "op": "eq", "value": "line_of_credit" },
+      { "field": "industry", "op": "eq", "value": "restaurant" }
+    ]
+  },
+  {
+    "name": "Lama International Bank",
+    "constraints": [{ "field": "requestedAmount", "op": "lt", "value": 200000 }]
+  },
+  {
+    "name": "Steady Income Bank",
+    "constraints": [
+      { "field": "averageYearIncome", "op": "gte", "value": 40000 },
+      { "field": "borrowerType", "op": "eq", "value": "consumer" },
+      { "field": "riskLevel", "op": "lt", "value": 90 },
+      { "field": "requestedAmount", "op": "lt", "value": 100000 }
+    ]
+  }
+]
