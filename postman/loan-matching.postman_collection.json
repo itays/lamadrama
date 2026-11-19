@@ -1,0 +1,318 @@
+{
+  "info": {
+    "name": "Lama Loan Matching",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "variable": [
+    {
+      "key": "baseUrl",
+      "value": "http://localhost:3000"
+    }
+  ],
+  "item": [
+    {
+      "name": "Example 1: no lender matches",
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "pm.test(\"status is 200\", () => pm.response.to.have.status(200));",
+              "pm.test(\"returns expected lenders\", () => pm.expect(pm.response.json()).to.eql([]));"
+            ]
+          }
+        }
+      ],
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"borrowerType\": \"business\",\n  \"loanType\": \"Line Of Credit\",\n  \"state\": \"NY\",\n  \"riskLevel\": 90,\n  \"Industry\": \"agriculture\",\n  \"requestedAmount\": \"200000\",\n  \"currentYearIncome\": \"90000\",\n  \"previousYearIncome\": \"45000\"\n}",
+          "options": {
+            "raw": {
+              "language": "json"
+            }
+          }
+        },
+        "url": {
+          "raw": "{{baseUrl}}/applicationMatch",
+          "host": ["{{baseUrl}}"],
+          "path": ["applicationMatch"]
+        }
+      }
+    },
+    {
+      "name": "Example 2: HaPoalama rejects risk 75",
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "pm.test(\"status is 200\", () => pm.response.to.have.status(200));",
+              "pm.test(\"returns expected lenders\", () => pm.expect(pm.response.json()).to.eql([\"First Lama Bank\", \"Lama International Bank\"]));"
+            ]
+          }
+        }
+      ],
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"borrowerType\": \"consumer\",\n  \"loanType\": \"Student Loan\",\n  \"state\": \"CA\",\n  \"riskLevel\": 75,\n  \"requestedAmount\": 30000,\n  \"currentYearIncome\": 20000,\n  \"previousYearIncome\": 25000\n}",
+          "options": {
+            "raw": {
+              "language": "json"
+            }
+          }
+        },
+        "url": {
+          "raw": "{{baseUrl}}/applicationMatch",
+          "host": ["{{baseUrl}}"],
+          "path": ["applicationMatch"]
+        }
+      }
+    },
+    {
+      "name": "Example 3: top two by constraint count",
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "pm.test(\"status is 200\", () => pm.response.to.have.status(200));",
+              "pm.test(\"returns expected lenders\", () => pm.expect(pm.response.json()).to.eql([\"Bank HaPoalama\", \"First Lama Bank\"]));"
+            ]
+          }
+        }
+      ],
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"borrowerType\": \"consumer\",\n  \"loanType\": \"Student Loan\",\n  \"state\": \"CA\",\n  \"riskLevel\": 55,\n  \"requestedAmount\": 30000,\n  \"currentYearIncome\": 30000,\n  \"previousYearIncome\": 45000\n}",
+          "options": {
+            "raw": {
+              "language": "json"
+            }
+          }
+        },
+        "url": {
+          "raw": "{{baseUrl}}/applicationMatch",
+          "host": ["{{baseUrl}}"],
+          "path": ["applicationMatch"]
+        }
+      }
+    },
+    {
+      "name": "Risk 80 leaves only Lama International",
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "pm.test(\"status is 200\", () => pm.response.to.have.status(200));",
+              "pm.test(\"returns expected lenders\", () => pm.expect(pm.response.json()).to.eql([\"Lama International Bank\"]));"
+            ]
+          }
+        }
+      ],
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"borrowerType\": \"consumer\",\n  \"loanType\": \"Student Loan\",\n  \"state\": \"CA\",\n  \"riskLevel\": 80,\n  \"requestedAmount\": 30000,\n  \"currentYearIncome\": 30000,\n  \"previousYearIncome\": 45000\n}",
+          "options": {
+            "raw": {
+              "language": "json"
+            }
+          }
+        },
+        "url": {
+          "raw": "{{baseUrl}}/applicationMatch",
+          "host": ["{{baseUrl}}"],
+          "path": ["applicationMatch"]
+        }
+      }
+    },
+    {
+      "name": "Full state name accepted",
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "pm.test(\"status is 200\", () => pm.response.to.have.status(200));",
+              "pm.test(\"returns expected lenders\", () => pm.expect(pm.response.json()).to.eql([\"Bank HaPoalama\", \"First Lama Bank\"]));"
+            ]
+          }
+        }
+      ],
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"borrowerType\": \"consumer\",\n  \"loanType\": \"Student Loan\",\n  \"state\": \"California\",\n  \"riskLevel\": 55,\n  \"requestedAmount\": 30000,\n  \"currentYearIncome\": 30000,\n  \"previousYearIncome\": 45000\n}",
+          "options": {
+            "raw": {
+              "language": "json"
+            }
+          }
+        },
+        "url": {
+          "raw": "{{baseUrl}}/applicationMatch",
+          "host": ["{{baseUrl}}"],
+          "path": ["applicationMatch"]
+        }
+      }
+    },
+    {
+      "name": "Restaurant line of credit",
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "pm.test(\"status is 200\", () => pm.response.to.have.status(200));",
+              "pm.test(\"returns expected lenders\", () => pm.expect(pm.response.json()).to.eql([\"Bank Otzar Halama\"]));"
+            ]
+          }
+        }
+      ],
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"borrowerType\": \"business\",\n  \"loanType\": \"Line of Credit\",\n  \"state\": \"CA\",\n  \"riskLevel\": 55,\n  \"requestedAmount\": 300000,\n  \"currentYearIncome\": 30000,\n  \"previousYearIncome\": 45000,\n  \"industry\": \"Restaurant\"\n}",
+          "options": {
+            "raw": {
+              "language": "json"
+            }
+          }
+        },
+        "url": {
+          "raw": "{{baseUrl}}/applicationMatch",
+          "host": ["{{baseUrl}}"],
+          "path": ["applicationMatch"]
+        }
+      }
+    },
+    {
+      "name": "Large business term loan",
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "pm.test(\"status is 200\", () => pm.response.to.have.status(200));",
+              "pm.test(\"returns expected lenders\", () => pm.expect(pm.response.json()).to.eql([\"Salt and Pepper\"]));"
+            ]
+          }
+        }
+      ],
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"borrowerType\": \"business\",\n  \"loanType\": \"Term Loan\",\n  \"state\": \"CA\",\n  \"riskLevel\": 55,\n  \"requestedAmount\": 600000,\n  \"currentYearIncome\": 30000,\n  \"previousYearIncome\": 45000\n}",
+          "options": {
+            "raw": {
+              "language": "json"
+            }
+          }
+        },
+        "url": {
+          "raw": "{{baseUrl}}/applicationMatch",
+          "host": ["{{baseUrl}}"],
+          "path": ["applicationMatch"]
+        }
+      }
+    },
+    {
+      "name": "Invalid loan type returns 400",
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "pm.test(\"status is 400\", () => pm.response.to.have.status(400));",
+              "pm.test(\"names the invalid field\", () => pm.expect(pm.response.json().issues[0].path).to.eql([\"loanType\"]));"
+            ]
+          }
+        }
+      ],
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"borrowerType\": \"consumer\",\n  \"loanType\": \"Mortgage\",\n  \"state\": \"CA\",\n  \"riskLevel\": 55,\n  \"requestedAmount\": 30000,\n  \"currentYearIncome\": 30000,\n  \"previousYearIncome\": 45000\n}",
+          "options": {
+            "raw": {
+              "language": "json"
+            }
+          }
+        },
+        "url": {
+          "raw": "{{baseUrl}}/applicationMatch",
+          "host": ["{{baseUrl}}"],
+          "path": ["applicationMatch"]
+        }
+      }
+    }
+  ]
+}
