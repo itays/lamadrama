@@ -141,15 +141,16 @@ Field names are case-insensitive, so `Industry` and `industry` both work.
 
 A lender matches when the application satisfies every one of its constraints. Matches are ordered by constraint count, most first, and the API returns the top two. Lenders with the same count keep their order in `lenders.json`.
 
-| Lender                  | Constraints                          |
-| ----------------------- | ------------------------------------ |
-| First Lama Bank         | consumer, risk < 80                  |
-| Bank HaPoalama          | student loan, state CA, risk < 60    |
-| Salt and Pepper         | business, amount > 500000, risk < 80 |
-| Bank Otzar Halama       | line of credit, industry restaurant  |
-| Lama International Bank | amount < 200000                      |
+| Lender                  | Constraints                                                  |
+| ----------------------- | ------------------------------------------------------------ |
+| First Lama Bank         | consumer, risk < 80                                          |
+| Bank HaPoalama          | student loan, state CA, risk < 60                            |
+| Salt and Pepper         | business, amount > 500000, risk < 80                         |
+| Bank Otzar Halama       | line of credit, industry restaurant                          |
+| Lama International Bank | amount < 200000                                              |
+| Steady Income Bank      | average income ≥ 40000, consumer, risk < 90, amount < 100000 |
 
-All thresholds are strict. An application without an `industry` never matches Bank Otzar Halama.
+The first five lenders come from the task. Steady Income Bank was added to exercise the `averageYearIncome` constraint. The task's thresholds are strict. Steady Income Bank's average income minimum is inclusive. An application without an `industry` never matches Bank Otzar Halama.
 
 ## Changing the lenders
 
@@ -159,7 +160,20 @@ Lenders live in [`src/server/lenders/lenders.json`](src/server/lenders/lenders.j
 { "field": "riskLevel", "op": "lt", "value": 60 }
 ```
 
-Numeric fields support `lt`, `lte`, `gt`, and `gte`. Text fields support `eq`. The server validates the file at startup and refuses to start if a constraint uses an unknown field or an operator that does not fit the field's type. Restart `bun dev` after editing the file.
+Numeric fields support `lt`, `lte`, `gt`, and `gte`. Text fields support `eq`. Besides the application's own numeric fields, constraints can use `averageYearIncome`, which the server computes as `(currentYearIncome + previousYearIncome) / 2`. Clients do not send it. The server validates the file at startup and refuses to start if a constraint uses an unknown field or an operator that does not fit the field's type. Restart `bun dev` after editing the file.
+
+### Trying `averageYearIncome`
+
+Steady Income Bank is the lender that uses `averageYearIncome`. The collection's **averageYearIncome** folder has two requests for it.
+
+| Request                                                       | Expected response                          |
+| ------------------------------------------------------------- | ------------------------------------------ |
+| Example 3 with incomes 35000 and 45000 (average 40000)        | `["Steady Income Bank", "Bank HaPoalama"]` |
+| Example 3 (average 37500) plus `"averageYearIncome": 1000000` | `["Bank HaPoalama", "First Lama Bank"]`    |
+
+The second request shows that the server computes the average itself. If it trusted the client's 1000000, Steady Income Bank would match.
+
+None of the task's three examples reach an average of 40000 as a consumer, so their responses are unchanged.
 
 ## Automated tests
 

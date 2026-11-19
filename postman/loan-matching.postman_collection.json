@@ -313,6 +313,90 @@
           "path": ["applicationMatch"]
         }
       }
+    },
+    {
+      "name": "averageYearIncome",
+      "description": "Steady Income Bank requires averageYearIncome >= 40000. The server computes averageYearIncome as (currentYearIncome + previousYearIncome) / 2; clients do not send it.",
+      "item": [
+        {
+          "name": "Average income 40,000 ranks Steady Income Bank first",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"status is 200\", () => pm.response.to.have.status(200));",
+                  "pm.test(\"returns expected lenders\", () => pm.expect(pm.response.json()).to.eql([\"Steady Income Bank\",\"Bank HaPoalama\"]));"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "description": "Incomes 35,000 and 45,000 average 40,000, so Steady Income Bank (4 constraints) matches and ranks above Bank HaPoalama (3).",
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"borrowerType\": \"consumer\",\n  \"loanType\": \"Student Loan\",\n  \"state\": \"CA\",\n  \"riskLevel\": 55,\n  \"requestedAmount\": 30000,\n  \"currentYearIncome\": 35000,\n  \"previousYearIncome\": 45000\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{baseUrl}}/applicationMatch",
+              "host": ["{{baseUrl}}"],
+              "path": ["applicationMatch"]
+            }
+          }
+        },
+        {
+          "name": "Client-sent averageYearIncome is ignored",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"status is 200\", () => pm.response.to.have.status(200));",
+                  "pm.test(\"matches on the computed average, not the sent one\", () => pm.expect(pm.response.json()).to.eql([\"Bank HaPoalama\", \"First Lama Bank\"]));"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "description": "Incomes 30,000 and 45,000 average 37,500, below Steady Income Bank's 40,000 minimum. The server computes the average itself, so the client's 1,000,000 has no effect.",
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"borrowerType\": \"consumer\",\n  \"loanType\": \"Student Loan\",\n  \"state\": \"CA\",\n  \"riskLevel\": 55,\n  \"requestedAmount\": 30000,\n  \"currentYearIncome\": 30000,\n  \"previousYearIncome\": 45000,\n  \"averageYearIncome\": 1000000\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{baseUrl}}/applicationMatch",
+              "host": ["{{baseUrl}}"],
+              "path": ["applicationMatch"]
+            }
+          }
+        }
+      ]
     }
   ]
 }
